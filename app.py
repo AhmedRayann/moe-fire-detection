@@ -10,6 +10,12 @@ st.set_page_config(page_title="🔥 Fire Detection - Mixture of Experts", layout
 st.title("🔥 Fire Detection with Mixture of Experts")
 st.write("Upload an image and let the Mixture of Experts detect fire based on scene type.")
 
+# Sidebar sliders for thresholds
+st.sidebar.header("⚙ Detection Settings")
+conf_threshold = st.sidebar.slider("Confidence Threshold", 0.0, 1.0, 0.3, step=0.01)
+iou_threshold = st.sidebar.slider("IoU Threshold (To Remove OverLaps)", 0.1, 1.0, 0.5, step=0.05)
+
+# Upload and process image
 uploaded_file = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
 
 if uploaded_file:
@@ -17,17 +23,17 @@ if uploaded_file:
     st.image(image, caption="Uploaded Image", use_column_width=True)
 
     with st.spinner("Running Mixture of Experts..."):
-        all_boxes, gate_weights = run_moe(image)
+        all_boxes, gate_weights = run_moe(image, conf_threshold=conf_threshold, iou_threshold=iou_threshold)
 
-    # Show scenario classification probabilities
+    # Show scene classification probabilities
     st.subheader("🔍 Scene Classification")
     for label, prob in zip(SCENARIOS, gate_weights):
-        st.write(f"**{label}**: {prob:.2%}")
+        st.write(f"{label}: {prob:.2%}")
 
-    # Draw all bounding boxes
+    # Draw detections
     img_array = np.array(image)
     img_bgr = img_array[..., ::-1].copy()
-    
+
     for boxes in all_boxes:
         for box in boxes:
             x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
