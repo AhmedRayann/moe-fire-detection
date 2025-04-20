@@ -18,8 +18,8 @@ from torchvision.ops import nms
 
 
 class GatingCNN(nn.Module):
-    def _init_(self, num_classes=4):
-        super(GatingCNN, self)._init_()
+    def __init__(self, num_classes=4):
+        super(GatingCNN, self).__init__()
         self.features = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
