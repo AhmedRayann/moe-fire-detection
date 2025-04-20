@@ -14,6 +14,7 @@ from PIL import Image
 from ultralytics import YOLO
 import os
 from copy import deepcopy
+from torchvision.ops import nms
 
 
 class GatingCNN(nn.Module):
@@ -81,19 +82,30 @@ def run_moe(pil_img):
     img_cv = np.array(pil_img.convert("RGB"))[..., ::-1]  # PIL to BGR
     h, w = img_cv.shape[:2]
 
-    all_boxes = []
+    all_boxes_raw = []
 
     for i, expert in enumerate(experts):
         result = expert(img_cv, verbose=False)[0]
-        weight = gate_weights[i].item()
+        weight = gate_weights[i]
 
-        if result.boxes and result.boxes.conf is not None:
+        if result.boxes is not None and result.boxes.conf is not None:
             xyxy = result.boxes.xyxy
             conf = result.boxes.conf * weight
             cls = result.boxes.cls
 
             combined = torch.cat([xyxy, conf.unsqueeze(1), cls.unsqueeze(1)], dim=1)
-            new_boxes = Boxes(combined, orig_shape=(h, w))
-            all_boxes.append(new_boxes)
+            all_boxes_raw.append(combined)
 
-    return all_boxes, gate_weights.numpy()
+    if not all_boxes_raw:
+        return [], gate_weights.numpy()
+
+    all_boxes_combined = torch.cat(all_boxes_raw, dim=0)
+    boxes = all_boxes_combined[:, :4]
+    scores = all_boxes_combined[:, 4]
+    classes = all_boxes_combined[:, 5]
+
+    keep_indices = nms(boxes, scores, iou_threshold=0.5)
+
+    kept = all_boxes_combined[keep_indices]
+    kept_boxes = Boxes(kept, orig_shape=(h, w))
+    return [kept_boxes], gate_weights.numpy()
