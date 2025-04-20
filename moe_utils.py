@@ -18,8 +18,8 @@ from torchvision.ops import nms
 
 
 class GatingCNN(nn.Module):
-    def __init__(self, num_classes=4):
-        super(GatingCNN, self).__init__()
+    def _init_(self, num_classes=4):
+        super(GatingCNN, self)._init_()
         self.features = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
@@ -74,8 +74,7 @@ def get_gate_weights(img_tensor):
     logits = gating_model(img_tensor)
     return torch.softmax(logits, dim=1)[0]
 
-@torch.no_grad()
-def run_moe(pil_img):
+def run_moe(pil_img, conf_threshold=0.3, iou_threshold=0.5):
     img_tensor = preprocess_image(pil_img)
     gate_weights = get_gate_weights(img_tensor)
 
@@ -89,12 +88,16 @@ def run_moe(pil_img):
         weight = gate_weights[i]
 
         if result.boxes is not None and result.boxes.conf is not None:
-            xyxy = result.boxes.xyxy
             conf = result.boxes.conf * weight
-            cls = result.boxes.cls
+            keep_mask = conf > conf_threshold
 
-            combined = torch.cat([xyxy, conf.unsqueeze(1), cls.unsqueeze(1)], dim=1)
-            all_boxes_raw.append(combined)
+            if keep_mask.sum() > 0:
+                xyxy = result.boxes.xyxy[keep_mask]
+                conf = conf[keep_mask]
+                cls = result.boxes.cls[keep_mask]
+
+                combined = torch.cat([xyxy, conf.unsqueeze(1), cls.unsqueeze(1)], dim=1)
+                all_boxes_raw.append(combined)
 
     if not all_boxes_raw:
         return [], gate_weights.numpy()
@@ -104,8 +107,9 @@ def run_moe(pil_img):
     scores = all_boxes_combined[:, 4]
     classes = all_boxes_combined[:, 5]
 
-    keep_indices = nms(boxes, scores, iou_threshold=0.5)
+    keep_indices = nms(boxes, scores, iou_threshold=iou_threshold)
 
     kept = all_boxes_combined[keep_indices]
     kept_boxes = Boxes(kept, orig_shape=(h, w))
+
     return [kept_boxes], gate_weights.numpy()
