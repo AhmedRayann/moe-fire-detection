@@ -19,7 +19,7 @@ This project utilizes:
 
 ---
 
-## 🧠 Core Components
+## Core Components
 
 - `utils.py`: Contains helper functions for the forward pass through the MoE system, bounding box processing, confidence scoring, thresholding, and NMS.
 - `app.py`: Main Streamlit app to upload an image and view the model’s fire detection results.
