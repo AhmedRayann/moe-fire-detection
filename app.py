@@ -20,7 +20,7 @@ uploaded_file = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
 
 if uploaded_file:
     image = Image.open(uploaded_file).convert("RGB")
-    st.image(image, caption="Uploaded Image", use_column_width=True)
+    st.image(image, caption="Uploaded Image", use_container_width=True)
 
     with st.spinner("Running Mixture of Experts..."):
         all_boxes, gate_weights = run_moe(image, conf_threshold=conf_threshold, iou_threshold=iou_threshold)
@@ -44,4 +44,4 @@ if uploaded_file:
             cv2.putText(img_bgr, label, (x1, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
 
     st.subheader("📸 Detection Output")
-    st.image(img_bgr[..., ::-1], caption="Detections", use_column_width=True)
+    st.image(img_bgr[..., ::-1], caption="Detections", use_container_width=True)
