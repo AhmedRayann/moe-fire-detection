@@ -14,7 +14,7 @@ This project presents a modular fire detection system that leverages a **Mixture
 ---
 
 ## 📂 Project Structure
-
+```
 The core implementation notebooks and models are organized under the `project_files/` directory:
 project_files/
 ├── Experts/
@@ -25,7 +25,7 @@ project_files/
 ├── basic_moe.ipynb # Baseline Mixture of Experts using NMS
 ├── improved_moe.ipynb # MoE with self-attention and Weighted Box Fusion
 └── tta_moe.ipynb # MoE with Test-Time Augmentation experiments
-
+```
 
 # About the App
 
