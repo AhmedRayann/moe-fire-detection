@@ -13,28 +13,13 @@ This project presents a modular fire detection system that leverages a **Mixture
 
 ---
 
-
-
-# Mixture of Experts Fire Detection (moe-fire-detection)
+# About the App
 
 A Deep Learning-based Fire Detection Web App built with **Streamlit**, featuring a **Mixture of Experts** architecture for improved detection across various real-world scenarios.
 
 **Live App**: [moe-fire-detection Streamlit](https://moe-fire-detection-mgxc8wzgchajjkobm6go5q.streamlit.app/)
 
----
 
-## Project Overview
-
-This project utilizes:
-- **4 Pre-trained YOLOv8 models** fine-tuned on distinct fire scenarios:
-  - Indoor fires
-  - Outdoor fires
-  - Tower-mounted surveillance (far-field)
-  - Satellite imagery
-- A **CNN-based Gating Network** that dynamically assigns weights to experts based on the input context.
-- A complete **Mixture of Experts (MoE)** framework to fuse predictions and enhance detection performance using confidence thresholding and Non-Maximum Suppression (NMS).
-
----
 
 ## Core Components
 
