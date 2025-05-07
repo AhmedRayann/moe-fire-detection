@@ -13,6 +13,20 @@ This project presents a modular fire detection system that leverages a **Mixture
 
 ---
 
+## 📂 Project Structure
+```
+The core implementation notebooks and models are organized under the `project_files/` directory:
+project_files/
+├── Experts/
+│ └── Notebooks for training scenario-specific YOLOv8 experts (indoor, outdoor, far-field, satellite)
+├── Gating_Network/
+│ └── Notebook for training the Gating CNN with self-attention
+└── Mixture_Of_Experts/
+├── basic_moe.ipynb # Baseline Mixture of Experts using NMS
+├── improved_moe.ipynb # MoE with self-attention and Weighted Box Fusion
+└── tta_moe.ipynb # MoE with Test-Time Augmentation experiments
+```
+
 # About the App
 
 A Deep Learning-based Fire Detection Web App built with **Streamlit**, featuring a **Mixture of Experts** architecture for improved detection across various real-world scenarios.
