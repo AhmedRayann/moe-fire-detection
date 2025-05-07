@@ -25,11 +25,7 @@ if uploaded_file:
     with st.spinner("Running Mixture of Experts..."):
         all_boxes, gate_weights = run_moe(image, conf_threshold=conf_threshold, iou_threshold=iou_threshold)
 
-    # Show scene classification probabilities
-    st.subheader("🔍 Scene Classification")
-    for label, prob in zip(SCENARIOS, gate_weights):
-        st.write(f"{label}: {prob:.2%}")
-
+    
     # Draw detections
     img_array = np.array(image)
     img_bgr = img_array[..., ::-1].copy()
